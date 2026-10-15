@@ -1,0 +1,1235 @@
+{
+  "info": {
+    "name": "FinTrack Backend",
+    "description": "Run Authentication first, then categories and financial modules. Destructive requests and password changes are in a separate folder. Reset tokens come only from your SMTP inbox.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Health",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/health",
+        "auth": {
+          "type": "noauth"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Response uses the API envelope', () => { const json = pm.response.json(); pm.expect(json.success).to.be.a('boolean'); pm.expect(json.message).to.be.a('string'); });",
+              "pm.test('Successful status', () => pm.expect(pm.response.code).to.be.within(200, 299));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/auth/register",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Demo User\",\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response uses the API envelope', () => { const json = pm.response.json(); pm.expect(json.success).to.be.a('boolean'); pm.expect(json.message).to.be.a('string'); });",
+                  "pm.test('Successful status', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+                  "if (pm.response.code < 300) pm.environment.set('token', pm.response.json().data.token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/auth/login",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response uses the API envelope', () => { const json = pm.response.json(); pm.expect(json.success).to.be.a('boolean'); pm.expect(json.message).to.be.a('string'); });",
+                  "pm.test('Successful status', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+                  "if (pm.response.code < 300) pm.environment.set('token', pm.response.json().data.token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/users/me"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response uses the API envelope', () => { const json = pm.response.json(); pm.expect(json.success).to.be.a('boolean'); pm.expect(json.message).to.be.a('string'); });",
+                  "pm.test('Successful status', () => pm.expect(pm.response.code).to.be.within(200, 299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/users/me",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"FinTrack Demo\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response uses the API envelope', () => { const json = pm.response.json(); pm.expect(json.success).to.be.a('boolean'); pm.expect(json.message).to.be.a('string'); });",
+                  "pm.test('Successful status', () => pm.expect(pm.response.code).to.be.within(200, 299));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Categories",
+      "item": [
+        {
+          "name": "List categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/categories"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response uses the API envelope', () => { const json = pm.response.json(); pm.expect(json.success).to.be.a('boolean'); pm.expect(json.message).to.be.a('string'); });",
+                  "pm.test('Successful status', () => pm.expect(pm.response.code).to.be.within(200, 299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create expense category",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/categories",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Demo Groceries\",\n  \"type\": \"expense\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response uses the API envelope', () => { const json = pm.response.json(); pm.expect(json.success).to.be.a('boolean'); pm.expect(json.message).to.be.a('string'); });",
+                  "pm.test('Successful status', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+                  "if (pm.response.code < 300) pm.environment.set('expense_category_id', pm.response.json().data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create income category",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/categories",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Demo Salary\",\n  \"type\": \"income\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response uses the API envelope', () => { const json = pm.response.json(); pm.expect(json.success).to.be.a('boolean'); pm.expect(json.message).to.be.a('string'); });",
+                  "pm.test('Successful status', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+                  "if (pm.response.code < 300) pm.environment.set('income_category_id', pm.response.json().data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update expense category",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/categories/{{expense_category_id}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Demo Food\",\n  \"type\": \"expense\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response uses the API envelope', () => { const json = pm.response.json(); pm.expect(json.success).to.be.a('boolean'); pm.expect(json.message).to.be.a('string'); });",
+                  "pm.test('Successful status', () => pm.expect(pm.response.code).to.be.within(200, 299));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Transactions",
+      "item": [
+        {
+          "name": "Create expense",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/transactions",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"category_id\": \"{{expense_category_id}}\",\n  \"type\": \"expense\",\n  \"amount\": \"6500.00\",\n  \"description\": \"Groceries\",\n  \"transaction_date\": \"2026-10-09\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response uses the API envelope', () => { const json = pm.response.json(); pm.expect(json.success).to.be.a('boolean'); pm.expect(json.message).to.be.a('string'); });",
+                  "pm.test('Successful status', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+                  "if (pm.response.code < 300) pm.environment.set('transaction_id', pm.response.json().data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create income",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/transactions",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"category_id\": \"{{income_category_id}}\",\n  \"type\": \"income\",\n  \"amount\": \"20000\",\n  \"transaction_date\": \"2026-10-01\",\n  \"description\": \"Salary\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response uses the API envelope', () => { const json = pm.response.json(); pm.expect(json.success).to.be.a('boolean'); pm.expect(json.message).to.be.a('string'); });",
+                  "pm.test('Successful status', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+                  "if (pm.response.code < 300) pm.environment.set('income_transaction_id', pm.response.json().data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Filter and paginate",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/transactions?type=expense&start_date=2026-10-01&end_date=2026-10-31&page=1&limit=20&sort=amount&order=desc&search=Groceries"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response uses the API envelope', () => { const json = pm.response.json(); pm.expect(json.success).to.be.a('boolean'); pm.expect(json.message).to.be.a('string'); });",
+                  "pm.test('Successful status', () => pm.expect(pm.response.code).to.be.within(200, 299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get transaction",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/transactions/{{transaction_id}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response uses the API envelope', () => { const json = pm.response.json(); pm.expect(json.success).to.be.a('boolean'); pm.expect(json.message).to.be.a('string'); });",
+                  "pm.test('Successful status', () => pm.expect(pm.response.code).to.be.within(200, 299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update expense",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/transactions/{{transaction_id}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"category_id\": \"{{expense_category_id}}\",\n  \"type\": \"expense\",\n  \"amount\": \"6500.00\",\n  \"description\": \"Groceries\",\n  \"transaction_date\": \"2026-10-09\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response uses the API envelope', () => { const json = pm.response.json(); pm.expect(json.success).to.be.a('boolean'); pm.expect(json.message).to.be.a('string'); });",
+                  "pm.test('Successful status', () => pm.expect(pm.response.code).to.be.within(200, 299));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Budgets",
+      "item": [
+        {
+          "name": "Create budget",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/budgets",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"category_id\": \"{{expense_category_id}}\",\n  \"amount\": \"8000.00\",\n  \"month\": 10,\n  \"year\": 2026\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response uses the API envelope', () => { const json = pm.response.json(); pm.expect(json.success).to.be.a('boolean'); pm.expect(json.message).to.be.a('string'); });",
+                  "pm.test('Successful status', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+                  "if (pm.response.code < 300) pm.environment.set('budget_id', pm.response.json().data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List with spending",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/budgets?month=10&year=2026"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response uses the API envelope', () => { const json = pm.response.json(); pm.expect(json.success).to.be.a('boolean'); pm.expect(json.message).to.be.a('string'); });",
+                  "pm.test('Successful status', () => pm.expect(pm.response.code).to.be.within(200, 299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update budget",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/budgets/{{budget_id}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"category_id\": \"{{expense_category_id}}\",\n  \"amount\": \"8000.00\",\n  \"month\": 10,\n  \"year\": 2026\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response uses the API envelope', () => { const json = pm.response.json(); pm.expect(json.success).to.be.a('boolean'); pm.expect(json.message).to.be.a('string'); });",
+                  "pm.test('Successful status', () => pm.expect(pm.response.code).to.be.within(200, 299));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Savings goals",
+      "item": [
+        {
+          "name": "Create goal",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/goals",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Buy Laptop\",\n  \"target_amount\": \"80000.00\",\n  \"target_date\": \"2027-10-01\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response uses the API envelope', () => { const json = pm.response.json(); pm.expect(json.success).to.be.a('boolean'); pm.expect(json.message).to.be.a('string'); });",
+                  "pm.test('Successful status', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+                  "if (pm.response.code < 300) pm.environment.set('goal_id', pm.response.json().data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List goals",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/goals"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response uses the API envelope', () => { const json = pm.response.json(); pm.expect(json.success).to.be.a('boolean'); pm.expect(json.message).to.be.a('string'); });",
+                  "pm.test('Successful status', () => pm.expect(pm.response.code).to.be.within(200, 299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get goal",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/goals/{{goal_id}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response uses the API envelope', () => { const json = pm.response.json(); pm.expect(json.success).to.be.a('boolean'); pm.expect(json.message).to.be.a('string'); });",
+                  "pm.test('Successful status', () => pm.expect(pm.response.code).to.be.within(200, 299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update goal",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/goals/{{goal_id}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Buy Laptop\",\n  \"target_amount\": \"80000.00\",\n  \"target_date\": \"2027-10-01\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response uses the API envelope', () => { const json = pm.response.json(); pm.expect(json.success).to.be.a('boolean'); pm.expect(json.message).to.be.a('string'); });",
+                  "pm.test('Successful status', () => pm.expect(pm.response.code).to.be.within(200, 299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Contribute",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/goals/{{goal_id}}/contributions",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": \"30000.00\",\n  \"contribution_date\": \"2026-10-09\",\n  \"note\": \"Savings allocation\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response uses the API envelope', () => { const json = pm.response.json(); pm.expect(json.success).to.be.a('boolean'); pm.expect(json.message).to.be.a('string'); });",
+                  "pm.test('Successful status', () => pm.expect(pm.response.code).to.be.within(200, 299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Contribution history",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/goals/{{goal_id}}/contributions"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response uses the API envelope', () => { const json = pm.response.json(); pm.expect(json.success).to.be.a('boolean'); pm.expect(json.message).to.be.a('string'); });",
+                  "pm.test('Successful status', () => pm.expect(pm.response.code).to.be.within(200, 299));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        {
+          "name": "Summary",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/dashboard/summary?month=10&year=2026"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response uses the API envelope', () => { const json = pm.response.json(); pm.expect(json.success).to.be.a('boolean'); pm.expect(json.message).to.be.a('string'); });",
+                  "pm.test('Successful status', () => pm.expect(pm.response.code).to.be.within(200, 299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Category spending",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/dashboard/category-spending?month=10&year=2026"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response uses the API envelope', () => { const json = pm.response.json(); pm.expect(json.success).to.be.a('boolean'); pm.expect(json.message).to.be.a('string'); });",
+                  "pm.test('Successful status', () => pm.expect(pm.response.code).to.be.within(200, 299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Monthly summary",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/dashboard/monthly-summary?year=2026"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response uses the API envelope', () => { const json = pm.response.json(); pm.expect(json.success).to.be.a('boolean'); pm.expect(json.message).to.be.a('string'); });",
+                  "pm.test('Successful status', () => pm.expect(pm.response.code).to.be.within(200, 299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Recent transactions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/dashboard/recent-transactions?limit=5"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response uses the API envelope', () => { const json = pm.response.json(); pm.expect(json.success).to.be.a('boolean'); pm.expect(json.message).to.be.a('string'); });",
+                  "pm.test('Successful status', () => pm.expect(pm.response.code).to.be.within(200, 299));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Recurring payments",
+      "item": [
+        {
+          "name": "Create recurring",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/recurring",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Internet\",\n  \"amount\": \"799.00\",\n  \"frequency\": \"monthly\",\n  \"next_payment_date\": \"2026-10-12\",\n  \"category_id\": \"{{expense_category_id}}\",\n  \"active\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response uses the API envelope', () => { const json = pm.response.json(); pm.expect(json.success).to.be.a('boolean'); pm.expect(json.message).to.be.a('string'); });",
+                  "pm.test('Successful status', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+                  "if (pm.response.code < 300) pm.environment.set('recurring_id', pm.response.json().data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List recurring",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/recurring"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response uses the API envelope', () => { const json = pm.response.json(); pm.expect(json.success).to.be.a('boolean'); pm.expect(json.message).to.be.a('string'); });",
+                  "pm.test('Successful status', () => pm.expect(pm.response.code).to.be.within(200, 299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get recurring",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/recurring/{{recurring_id}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response uses the API envelope', () => { const json = pm.response.json(); pm.expect(json.success).to.be.a('boolean'); pm.expect(json.message).to.be.a('string'); });",
+                  "pm.test('Successful status', () => pm.expect(pm.response.code).to.be.within(200, 299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update recurring",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/recurring/{{recurring_id}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Internet\",\n  \"amount\": \"799.00\",\n  \"frequency\": \"monthly\",\n  \"next_payment_date\": \"2026-10-12\",\n  \"category_id\": \"{{expense_category_id}}\",\n  \"active\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response uses the API envelope', () => { const json = pm.response.json(); pm.expect(json.success).to.be.a('boolean'); pm.expect(json.message).to.be.a('string'); });",
+                  "pm.test('Successful status', () => pm.expect(pm.response.code).to.be.within(200, 299));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Notifications",
+      "item": [
+        {
+          "name": "List notifications",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/notifications?page=1&limit=20"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response uses the API envelope', () => { const json = pm.response.json(); pm.expect(json.success).to.be.a('boolean'); pm.expect(json.message).to.be.a('string'); });",
+                  "pm.test('Successful status', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+                  "const items = pm.response.json().data.items; if (items.length) pm.environment.set('notification_id', items[0].id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Mark one read (requires notification)",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": "{{base_url}}/api/notifications/{{notification_id}}/read"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response uses the API envelope', () => { const json = pm.response.json(); pm.expect(json.success).to.be.a('boolean'); pm.expect(json.message).to.be.a('string'); });",
+                  "pm.test('Successful status', () => pm.expect(pm.response.code).to.be.within(200, 299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Mark all read",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": "{{base_url}}/api/notifications/read-all"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response uses the API envelope', () => { const json = pm.response.json(); pm.expect(json.success).to.be.a('boolean'); pm.expect(json.message).to.be.a('string'); });",
+                  "pm.test('Successful status', () => pm.expect(pm.response.code).to.be.within(200, 299));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Manual password recovery and cleanup",
+      "item": [
+        {
+          "name": "Forgot password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/auth/forgot-password",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response uses the API envelope', () => { const json = pm.response.json(); pm.expect(json.success).to.be.a('boolean'); pm.expect(json.message).to.be.a('string'); });",
+                  "pm.test('Successful status', () => pm.expect(pm.response.code).to.be.within(200, 299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Reset password (copy token from email)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/auth/reset-password",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"{{reset_token}}\",\n  \"new_password\": \"{{new_password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response uses the API envelope', () => { const json = pm.response.json(); pm.expect(json.success).to.be.a('boolean'); pm.expect(json.message).to.be.a('string'); });",
+                  "pm.test('Successful status', () => pm.expect(pm.response.code).to.be.within(200, 299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Change password (revokes session)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/auth/change-password",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"current_password\": \"{{password}}\",\n  \"new_password\": \"{{new_password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response uses the API envelope', () => { const json = pm.response.json(); pm.expect(json.success).to.be.a('boolean'); pm.expect(json.message).to.be.a('string'); });",
+                  "pm.test('Successful status', () => pm.expect(pm.response.code).to.be.within(200, 299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete expense",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{base_url}}/api/transactions/{{transaction_id}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response uses the API envelope', () => { const json = pm.response.json(); pm.expect(json.success).to.be.a('boolean'); pm.expect(json.message).to.be.a('string'); });",
+                  "pm.test('Successful status', () => pm.expect(pm.response.code).to.be.within(200, 299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete income",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{base_url}}/api/transactions/{{income_transaction_id}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response uses the API envelope', () => { const json = pm.response.json(); pm.expect(json.success).to.be.a('boolean'); pm.expect(json.message).to.be.a('string'); });",
+                  "pm.test('Successful status', () => pm.expect(pm.response.code).to.be.within(200, 299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete budget",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{base_url}}/api/budgets/{{budget_id}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response uses the API envelope', () => { const json = pm.response.json(); pm.expect(json.success).to.be.a('boolean'); pm.expect(json.message).to.be.a('string'); });",
+                  "pm.test('Successful status', () => pm.expect(pm.response.code).to.be.within(200, 299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete goal and history",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{base_url}}/api/goals/{{goal_id}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response uses the API envelope', () => { const json = pm.response.json(); pm.expect(json.success).to.be.a('boolean'); pm.expect(json.message).to.be.a('string'); });",
+                  "pm.test('Successful status', () => pm.expect(pm.response.code).to.be.within(200, 299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete recurring",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{base_url}}/api/recurring/{{recurring_id}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response uses the API envelope', () => { const json = pm.response.json(); pm.expect(json.success).to.be.a('boolean'); pm.expect(json.message).to.be.a('string'); });",
+                  "pm.test('Successful status', () => pm.expect(pm.response.code).to.be.within(200, 299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete expense category",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{base_url}}/api/categories/{{expense_category_id}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response uses the API envelope', () => { const json = pm.response.json(); pm.expect(json.success).to.be.a('boolean'); pm.expect(json.message).to.be.a('string'); });",
+                  "pm.test('Successful status', () => pm.expect(pm.response.code).to.be.within(200, 299));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete income category",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{base_url}}/api/categories/{{income_category_id}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response uses the API envelope', () => { const json = pm.response.json(); pm.expect(json.success).to.be.a('boolean'); pm.expect(json.message).to.be.a('string'); });",
+                  "pm.test('Successful status', () => pm.expect(pm.response.code).to.be.within(200, 299));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
